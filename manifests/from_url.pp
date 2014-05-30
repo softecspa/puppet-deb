@@ -18,7 +18,7 @@ define deb::from_url (
 
   exec {"check ${real_package_name}":
     command => 'true',
-    unless  => "dpkg -l ${real_package_name}",
+    unless  => "dpkg -l ${real_package_name} | tail -n1 | awk '{print \$3}' | egrep -i '^${version}$'",
     notify  => Exec["${real_package_name} download"]
   }
 
