@@ -41,8 +41,3 @@ define deb::from_url (
     refreshonly => true
   }
 }
-
-deb::from_url{'virtualbox-4.3':
-  url => 'http://download.virtualbox.org/virtualbox/4.3.12/virtualbox-4.3_4.3.12-93733~Ubuntu~precise_amd64.deb',
-  version => '4.3.12-93733~Ubuntu~precise'
-}
