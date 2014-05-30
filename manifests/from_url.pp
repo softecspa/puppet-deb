@@ -18,7 +18,7 @@ define deb::from_url (
 
   exec {"check ${real_package_name}":
     command => 'true',
-    unless  => "dpkg -l | grep ${real_package_name}",
+    unless  => "dpkg -l ${real_package_name}",
     notify  => Exec["${real_package_name} download"]
   }
 
@@ -32,7 +32,13 @@ define deb::from_url (
     ensure      => present,
     provider    => dpkg,
     source      => "${tmp_dir}/${filename}",
-    require     => Exec["${real_package_name} download"]
+    require     => Exec["${real_package_name} download"],
+    notify	=> Exec["rm ${real_package_name} deb"]
+  }
+
+  exec {"rm ${real_package_name} deb":
+    command 	=> "rm ${tmp_dir}/${filename}",
+    refreshonly => true
   }
 }
 
