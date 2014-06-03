@@ -16,16 +16,16 @@ define deb::from_url (
     path  => $::path
   }
 
-  exec {"check ${real_package_name}":
-    command => 'true',
-    unless  => "dpkg -l ${real_package_name} | tail -n1 | awk '{print \$3}' | egrep -i '^${version}$'",
-    notify  => Exec["${real_package_name} download"]
-  }
+  #exec {"check ${real_package_name}":
+  #  command => 'true',
+  #  unless  => "dpkg -l ${real_package_name} | tail -n1 | awk '{print \$3}' | egrep -i '^${version}$'",
+  #  notify  => Exec["${real_package_name} download"]
+  #}
 
   exec {"${real_package_name} download":
     command     => "wget --output-document=${tmp_dir}/${filename} ${url}",
     creates     => "${tmp_dir}/${filename}",
-    refreshonly => true
+    unless      => "dpkg -l ${real_package_name} | tail -n1 | awk '{print \$3}' | egrep -i '^${version}$'",
   }
 
   package {$real_package_name :
@@ -33,7 +33,7 @@ define deb::from_url (
     provider    => dpkg,
     source      => "${tmp_dir}/${filename}",
     require     => Exec["${real_package_name} download"],
-    notify	=> Exec["rm ${real_package_name} deb"]
+    notify	    => Exec["rm ${real_package_name} deb"]
   }
 
   exec {"rm ${real_package_name} deb":
